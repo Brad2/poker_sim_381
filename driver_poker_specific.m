@@ -2,6 +2,7 @@
 %  Parameters to change
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 number_of_MC_sims = 15000; %could make this input
+MaCh_MoCa = 1; %Set to 0 for Markov Chain and 1 for Monte Carlo Sim
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Don't play with stuff after this
@@ -95,8 +96,14 @@ while length(cards_on_table) < 5
     end
     
     if length(cards_on_table) == 3
-        [win_per_MoCa,actual_num_sims] = MonteCarloSim(number_of_MC_sims, ...
-            [player_hand cards_on_table],[oppo_hand cards_on_table],deck,card_avail);
+        if MaCh_MoCa == 0
+            win_per = MarkovChain_2iter([player_hand cards_on_table], ...
+                [oppo_hand cards_on_table],deck,card_avail);
+        else
+            [win_per,~] = MonteCarloSim(number_of_MC_sims, ...
+                [player_hand cards_on_table],[oppo_hand cards_on_table],deck,card_avail);
+        end
+        
         format = ['In your hand:\n   %5s%1s %5s%1s\nIn your opponents hand'...
             ':\n   %5s%1s %5s%1s\nCards on the table:\n   %5s%1s %5s%1s %5s%1s'...
             '\nYou have a %2.4g%% chance to win.\n'];
@@ -106,7 +113,7 @@ while length(cards_on_table) < 5
             deck(1,oppo_hand(2)),deck(2,oppo_hand(2)),...
             deck(1,cards_on_table(1)),deck(2,cards_on_table(1)),...
             deck(1,cards_on_table(2)),deck(2,cards_on_table(2)),...
-            deck(1,cards_on_table(3)),deck(2,cards_on_table(3)),100*win_per_MoCa);
+            deck(1,cards_on_table(3)),deck(2,cards_on_table(3)),100*win_per);
     elseif length(cards_on_table) == 4
         win_per_MaCh = MarkovChain([player_hand cards_on_table],...
             [oppo_hand cards_on_table],deck,card_avail);
@@ -174,12 +181,3 @@ else
 end
 fprintf(['The winning hand was a ' win_style '.\n']);
 fprintf(format);
-
-
-
-
-
-
-
-
-
